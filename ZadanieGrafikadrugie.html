@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 2 - Exercise 2</title>
+    <style>
+        body {
+            background-color: #DDDDDD;
+        }
+        canvas {
+            background-color: white;
+        }
+        #canvasholder {
+            border: 2px solid black;
+            float: left;
+        }
+    </style>
+</head>
+<body onload="init()">
+    <h2>Lab 2 - Exercise 2</h2>
+
+    <p>
+        <label for="color">Color:</label>
+        <select id="color">
+            <option value="black">black</option>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="blue">blue</option>
+        </select>
+
+        <input type="text" id="newColorInput" placeholder="Enter color">
+        <button onclick="addColor()">Add Color</button>
+    </p>
+
+    <p>
+        <label for="screen">Tool:</label>
+        <select id="screen">
+            <option value="squares">Squares</option>
+            <option value="triangles">Triangles</option>
+        </select>
+
+        <button id="clearButton">Clear</button>
+    </p>
+
+    <div id="canvasholder">
+        <canvas id="canvas" width="600" height="600"></canvas>
+    </div>
+
+    <script>
+        "use strict";
+
+        let canvas, graphics;
+        let currentTool = "squares";
+
+        function init() {
+            canvas = document.getElementById("canvas");
+            graphics = canvas.getContext("2d");
+
+            // Obsługa przycisku CLEAR
+            document.getElementById("clearButton").onclick = doClear;
+
+            // Obsługa zmiany narzędzia
+            document.getElementById("screen").onchange = function() {
+                currentTool = this.value;
+            };
+
+            canvas.addEventListener("mousemove", doMouseMove);
+        }
+
+        function doClear() {
+            graphics.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function addColor() {
+            const colorInput = document.getElementById("newColorInput").value.trim();
+            if (colorInput) {
+                const colorSelect = document.getElementById("color");
+                const option = document.createElement("option");
+                option.value = colorInput;
+                option.text = colorInput;
+                colorSelect.appendChild(option);
+            }
+        }
+
+        function doMouseMove(evt) {
+            if (evt.buttons !== 1) return;
+
+            const box = canvas.getBoundingClientRect();
+            const x = evt.clientX - box.left;
+            const y = evt.clientY - box.top;
+
+            const color = document.getElementById("color").value;
+            graphics.fillStyle = color;
+
+            if (currentTool === "squares") {
+                graphics.fillRect(x - 10, y - 10, 20, 20);
+            } else if (currentTool === "triangles") {
+                graphics.beginPath();
+                graphics.moveTo(x, y - 10);
+                graphics.lineTo(x - 10, y + 10);
+                graphics.lineTo(x + 10, y + 10);
+                graphics.closePath();
+                graphics.fill();
+            }
+        }
+    </script>
+</body>
+</html>
